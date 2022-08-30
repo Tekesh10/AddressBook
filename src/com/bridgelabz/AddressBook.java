@@ -80,6 +80,7 @@ public class AddressBook {
                 if (!contactList.isEmpty())
                     searchResult.put(keyOfBook, contactList);
             }
+            System.out.println(searchResult);
             return searchResult;
         } catch (Exception e) {
             System.out.println(e);
