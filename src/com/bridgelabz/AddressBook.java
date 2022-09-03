@@ -13,9 +13,10 @@ public class AddressBook {
                         1. Crate New address book\s
                         2. Continue with existing address book\s
                         3. Show All address books\s
-                        4. Search person by location in all address book\s
+                        4. Search contact by Location\s
                         5. Search Phone number by Name\s
-                        6. Exit""");
+                        6. Sort contacts in address book\s
+                        0. Exit""");
                 int choice = scanner.nextInt();
 
                 switch (choice) {
@@ -52,15 +53,17 @@ public class AddressBook {
                         break;
 
                     case 4:
-                        System.out.println("Enter Name of City or State");
-                        String nameForLocation = scanner.next();
-                        searchByLocation(nameForLocation);
+                        searchByLocation();
                         break;
 
                     case 5:
                         System.out.println("Enter first Name");
                         String nameForContact = scanner.next();
                         getContactNo(nameForContact);
+                        break;
+
+                    case 6:
+                        sortContacts();
                         break;
 
                     default:
@@ -71,29 +74,54 @@ public class AddressBook {
             System.out.println(e);
         }
     }
-    public Hashtable<String, List<String>> searchByLocation(String nameForLocation) {
-        try {
-            Hashtable<String, List<String>> searchResult = new Hashtable<>();
-            List<String> contactList;
-            for (String keyOfBook : contactBook.keySet()) {
-                contactList = new ArrayList<>();
-                for (int index = 0; index < contactBook.get(keyOfBook).size(); index++) {
-
-                    if (contactBook.get(keyOfBook).get(index).getCity().equals(nameForLocation))
-                        contactList.add(contactBook.get(keyOfBook).get(index).getFirst_name());
-
-                    if (contactBook.get(keyOfBook).get(index).getState().equals(nameForLocation))
-                        contactList.add(contactBook.get(keyOfBook).get(index).getFirst_name());
-                }
-                if (!contactList.isEmpty())
-                    searchResult.put(keyOfBook, contactList);
+    private void sortContacts() {
+        boolean run = true;
+        while (run) {
+            System.out.println("""
+                    Sort contacts by
+                    1. City
+                    2. State
+                    3. Zipcode
+                    0. EXIT""");
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1 ->
+                        contactBook.keySet().forEach(keyOfBook -> contactBook.get(keyOfBook).stream().sorted(Comparator.comparing(Contacts::getCity)).forEach(System.out::println));
+                case 2 ->
+                        contactBook.keySet().forEach(keyOfBook -> contactBook.get(keyOfBook).stream().sorted(Comparator.comparing(Contacts::getState)).forEach(System.out::println));
+                case 3 ->
+                        contactBook.keySet().forEach(keyOfBook -> contactBook.get(keyOfBook).stream().sorted(Comparator.comparing(Contacts::getZipcode)).forEach(System.out::println));
+                case 0 -> run = false;
             }
-            System.out.println(searchResult);
-            return searchResult;
-        } catch (Exception e) {
-            System.out.println(e);
         }
-        return null;
+    }
+    public void searchByLocation() {
+        try {
+            boolean sort = true;
+            while (sort) {
+                System.out.println("""
+                        Search contact by
+                        1. City
+                        2. State
+                        0. EXIT""");
+                int choice = scanner.nextInt();
+                switch (choice) {
+                    case 1 -> {
+                        System.out.println("Enter Name of the City");
+                        String contactsInCity = scanner.next();
+                        contactBook.keySet().forEach(keyOfBook -> contactBook.get(keyOfBook).stream().filter(contactInfo -> contactsInCity.equals(contactInfo.getCity())).forEach(System.out::println));
+                    }
+                    case 2 -> {
+                        System.out.println("Enter Name of the State");
+                        String contactsInState = scanner.next();
+                        contactBook.keySet().forEach(keyOfBook -> contactBook.get(keyOfBook).stream().filter(contactInfo -> contactsInState.equals(contactInfo.getState())).forEach(System.out::println));
+                    }
+                    case 0 -> sort = false;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
     private void getContactNo(String nameOfContact) {
         try {
@@ -105,6 +133,9 @@ public class AddressBook {
                         String phone = contactBook.get(keyOfBook).get(index).getPhone_number();
 
                         System.out.println(keyOfBook + " : " + nameOfContact + " " + lastName + " --> " + phone);
+                    }
+                    else {
+                        System.out.println("No contacts found");
                     }
                 }
             }
