@@ -58,6 +58,9 @@ public class Contacts {
         this.state = state;
     }
 
+    public String getZipcode() {
+        return zipcode;
+    }
     public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
